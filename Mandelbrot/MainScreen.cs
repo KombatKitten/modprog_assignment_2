@@ -28,8 +28,11 @@ namespace Mandelbrot {
         private MandelBrotImage mandelBrotImage = new MandelBrotImage();
 
         private void OnFormResize(object sender, EventArgs e) {
-            this.mandelBrotImage.Size = new Size(this.ClientSize.Width, this.ClientSize.Height - MANDELBROT_OFFSET_Y);
-            this.mandelBrotImage.Location = new Point(0, MANDELBROT_OFFSET_Y);
+            this.mandelBrotImage.Size = new Size(this.ClientSize.Width, this.ClientSize.Height/* - MANDELBROT_OFFSET_Y*/);
+            this.mandelBrotImage.Location = new Point(0,0/* MANDELBROT_OFFSET_Y*/);
+
+            //make sure the entire mandelbrot is redrawn
+            this.mandelBrotImage.Invalidate();
         }
     }
 }

@@ -15,14 +15,11 @@ namespace Mandelbrot {
         protected override void OnPaint(PaintEventArgs e) {
             base.OnPaint(e);
 
-            Console.WriteLine("Start drawing");
-            e.Graphics.DrawImage(MandelBrot.Generate(this.ClientSize, new PointF(0.0f, 0.0f), 2f, defaultColorMapper), new Point(0, 0));
+            e.Graphics.DrawImage(MandelBrot.Generate(this.ClientSize, new PointF(.41f, .21f), .05f, defaultColorMapper ), new Point(0, 0));
 
             Color defaultColorMapper(float x) {
-                return RGB(x * .3f, x * x, x * .3f);
+                return RGB((float)Math.Pow(x, .1) * .25f - 0.1f, (float)Math.Pow(x, .7), (float)Math.Pow(x, .5) * .62f);
             }
-
-            Console.WriteLine("Done drawing");
         }
 
         public static Color RGB(float r, float g, float b) {
@@ -31,7 +28,7 @@ namespace Mandelbrot {
     }
 
     public static class MandelBrot {
-        public static int MaxMandelNumber { get; set; } = 100;
+        public static int MaxMandelNumber { get; set; } = 500;
         public static Color backgroundColor = Color.FromArgb(0, 0, 0);
 
         public static Bitmap Generate(Size canvasSize, PointF center, float scale, FloatToColorMapper colorFromIterationCount) {
