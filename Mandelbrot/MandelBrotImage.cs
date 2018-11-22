@@ -1,39 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Drawing;
 
 namespace Mandelbrot {
-    //Takes a floating point number from 0 to 1 and outputs a color
-    public delegate Color FloatToColorMapper(float f);
-
-    public partial class Form1 : Form {
-        const int MANDELBROT_OFFSET_Y = 200;
-
-        public Form1() {
-            InitializeComponent();
-            
-            this.WindowState = FormWindowState.Maximized;
-            
-            this.Resize += OnFormResize;
-
-            this.Controls.Add(this.mandelBrotImage);
-        }
-
-        private MandelBrotImage mandelBrotImage = new MandelBrotImage();
-
-        private void OnFormResize(object sender, EventArgs e) {
-            this.mandelBrotImage.Size = new Size(this.ClientSize.Width, this.ClientSize.Height - MANDELBROT_OFFSET_Y);
-            this.mandelBrotImage.Location = new Point(0, MANDELBROT_OFFSET_Y);
-        }
-    }
-
-    public class MandelBrotImage : Control{
+    public class MandelBrotImage : Control {
         public MandelBrotImage() {
             this.DoubleBuffered = true;
         }
@@ -64,15 +38,15 @@ namespace Mandelbrot {
             //canvas will be the return value
             Bitmap canvas = new Bitmap(canvasSize.Width, canvasSize.Height);
 
-            for(int pixelX = 0; pixelX < canvasSize.Width; pixelX++) {
-                for(int pixelY = 0; pixelY < canvasSize.Height; pixelY++) {
-                    double mappedX = center.X + ((double)canvasSize.Width / (double) canvasSize.Height / -2 + (double)pixelX / (double)canvasSize.Height) * scale;
+            for (int pixelX = 0; pixelX < canvasSize.Width; pixelX++) {
+                for (int pixelY = 0; pixelY < canvasSize.Height; pixelY++) {
+                    double mappedX = center.X + ((double)canvasSize.Width / (double)canvasSize.Height / -2 + (double)pixelX / (double)canvasSize.Height) * scale;
                     double mappedY = center.Y + (-0.5 + (double)pixelY / (double)canvasSize.Height) * scale;
 
                     int? mandelNumber = MandelNumber(mappedX, mappedY);
 
                     canvas.SetPixel(pixelX, pixelY, mandelNumber != null ?
-                        colorFromIterationCount((float)mandelNumber / (float) MaxMandelNumber)
+                        colorFromIterationCount((float)mandelNumber / (float)MaxMandelNumber)
                         : backgroundColor);
                 }
             }
@@ -86,7 +60,7 @@ namespace Mandelbrot {
 
             const double MAX_MANDEL_DISTANCE = 2.0;
 
-            while(Pythagoras(a, b) < MAX_MANDEL_DISTANCE) {
+            while (Pythagoras(a, b) < MAX_MANDEL_DISTANCE) {
                 (a, b) = MandelTransform(a, b, x, y);
 
                 if (++result > MaxMandelNumber) {

@@ -1,5 +1,5 @@
 ﻿namespace Mandelbrot {
-    partial class Form1 {
+    partial class MainScreen {
         /// <summary>
         /// Required designer variable.
         /// </summary>
