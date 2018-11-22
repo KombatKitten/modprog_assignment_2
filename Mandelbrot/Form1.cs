@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Mandelbrot {
+    //Takes a floating point number from 0 to 1 and outputs a color
+    public delegate Color FloatToColorMapper(float f);
+
     public partial class Form1 : Form {
         public Form1() {
             InitializeComponent();
@@ -21,7 +24,13 @@ namespace Mandelbrot {
         protected override void OnPaint(PaintEventArgs e) {
             base.OnPaint(e);
 
-            e.Graphics.DrawImage(MandelBrot.Generate(this.ClientSize, new PointF(0.0f, 0.0f), 2f, new DefaultColorMapper()), new Point(0, 0));
+            
+            e.Graphics.DrawImage(MandelBrot.Generate(this.ClientSize, new PointF(0.0f, 0.0f), 2f, defaultColorMapper), new Point(0, 0));
+
+            Color defaultColorMapper(float x) {
+                int brightness = (int)(x * 255);
+                return Color.FromArgb(brightness, brightness, brightness);
+            }
         }
     }
 
@@ -29,21 +38,21 @@ namespace Mandelbrot {
         public static int MaxMandelNumber { get; set; } = 255;
         public static Color backgroundColor = Color.FromArgb(0, 0, 0);
 
-        public static Bitmap Generate(Size canvasSize, PointF center, float scale, IIntToColorMapper colorFromIterationCount) {
+        public static Bitmap Generate(Size canvasSize, PointF center, float scale, FloatToColorMapper colorFromIterationCount) {
             //canvas will be returned
             Bitmap canvas = new Bitmap(canvasSize.Width, canvasSize.Height);
 
-            for(int x = 0; x < canvasSize.Width; x++) {
-                for(int y = 0; y < canvasSize.Height; y++) {
-                    //TODO: map bitmap x, y to coords in mandelbrot using center and scale
+            for(int pixelX = 0; pixelX < canvasSize.Width; pixelX++) {
+                for(int pixelY = 0; pixelY < canvasSize.Height; pixelY++) {
+                    //TODO: map bitmap x-, y-coords to coords in mandelbrot using center and scale
 
-                    double mappedX = center.X + ((double)canvasSize.Width / (double) canvasSize.Height / -2 + (double)x / (double)canvasSize.Height) * scale;
-                    double mappedY = center.Y + (-0.5 + (double)y / (double)canvasSize.Height) * scale;
+                    double mappedX = center.X + ((double)canvasSize.Width / (double) canvasSize.Height / -2 + (double)pixelX / (double)canvasSize.Height) * scale;
+                    double mappedY = center.Y + (-0.5 + (double)pixelY / (double)canvasSize.Height) * scale;
 
                     int? mandelNumber = MandelNumber(mappedX, mappedY);
 
-                    canvas.SetPixel(x, y, mandelNumber != null ?
-                        colorFromIterationCount.Map((int) mandelNumber)
+                    canvas.SetPixel(pixelX, pixelY, mandelNumber != null ?
+                        colorFromIterationCount((float)mandelNumber / (float) MaxMandelNumber)
                         : backgroundColor);
                 }
             }
