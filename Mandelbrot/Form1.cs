@@ -13,39 +13,59 @@ namespace Mandelbrot {
     public delegate Color FloatToColorMapper(float f);
 
     public partial class Form1 : Form {
+        const int MANDELBROT_OFFSET_Y = 200;
+
         public Form1() {
             InitializeComponent();
-
-            this.ClientSize = new Size(1800, 1000);
-
+            
             this.WindowState = FormWindowState.Maximized;
+            
+            this.Resize += OnFormResize;
+
+            this.Controls.Add(this.mandelBrotImage);
+        }
+
+        private MandelBrotImage mandelBrotImage = new MandelBrotImage();
+
+        private void OnFormResize(object sender, EventArgs e) {
+            this.mandelBrotImage.Size = new Size(this.ClientSize.Width, this.ClientSize.Height - MANDELBROT_OFFSET_Y);
+            this.mandelBrotImage.Location = new Point(0, MANDELBROT_OFFSET_Y);
+        }
+    }
+
+    public class MandelBrotImage : Control{
+        public MandelBrotImage() {
+            this.DoubleBuffered = true;
         }
 
         protected override void OnPaint(PaintEventArgs e) {
             base.OnPaint(e);
 
-            
+            Console.WriteLine("Start drawing");
             e.Graphics.DrawImage(MandelBrot.Generate(this.ClientSize, new PointF(0.0f, 0.0f), 2f, defaultColorMapper), new Point(0, 0));
 
             Color defaultColorMapper(float x) {
-                int brightness = (int)(x * 255);
-                return Color.FromArgb(brightness, brightness, brightness);
+                return RGB(x * .3f, x * x, x * .3f);
             }
+
+            Console.WriteLine("Done drawing");
+        }
+
+        public static Color RGB(float r, float g, float b) {
+            return Color.FromArgb((int)(r * 255), (int)(g * 255), (int)(b * 255));
         }
     }
 
     public static class MandelBrot {
-        public static int MaxMandelNumber { get; set; } = 255;
+        public static int MaxMandelNumber { get; set; } = 100;
         public static Color backgroundColor = Color.FromArgb(0, 0, 0);
 
         public static Bitmap Generate(Size canvasSize, PointF center, float scale, FloatToColorMapper colorFromIterationCount) {
-            //canvas will be returned
+            //canvas will be the return value
             Bitmap canvas = new Bitmap(canvasSize.Width, canvasSize.Height);
 
             for(int pixelX = 0; pixelX < canvasSize.Width; pixelX++) {
                 for(int pixelY = 0; pixelY < canvasSize.Height; pixelY++) {
-                    //TODO: map bitmap x-, y-coords to coords in mandelbrot using center and scale
-
                     double mappedX = center.X + ((double)canvasSize.Width / (double) canvasSize.Height / -2 + (double)pixelX / (double)canvasSize.Height) * scale;
                     double mappedY = center.Y + (-0.5 + (double)pixelY / (double)canvasSize.Height) * scale;
 
@@ -84,18 +104,6 @@ namespace Mandelbrot {
 
         public static double Pythagoras(double a, double b) {
             return Math.Sqrt(a * a + b * b);
-        }
-    }
-
-    public interface IIntToColorMapper {
-        Color Map(int input);
-    }
-
-    public class DefaultColorMapper : IIntToColorMapper {
-        public Color Map(int input) {
-            input = Math.Min(input, 255);
-
-            return Color.FromArgb(input, input, input);
         }
     }
 }
