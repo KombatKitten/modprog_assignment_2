@@ -73,9 +73,10 @@
     <Compile Include="MainScreen.Designer.cs">
       <DependentUpon>MainScreen.cs</DependentUpon>
     </Compile>
-    <Compile Include="MandelBrotImage.cs">
+    <Compile Include="MandelbrotImage.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="PointD.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
