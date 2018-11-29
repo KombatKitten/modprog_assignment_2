@@ -72,6 +72,7 @@ namespace Mandelbrot {
             this.MouseWheel += OnMouseWheel;
             this.mandelbrotImage.MouseClick += OnMandelbrotClick;
 
+            this.Text = "Mandelbrot";
             this.WindowState = FormWindowState.Maximized;
             this.UpdateMandelbrotImage();
         }
