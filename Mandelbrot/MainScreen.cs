@@ -62,13 +62,18 @@ namespace Mandelbrot {
                 ((ComboBoxItem)highlights.SelectedItem).Click();
             };
 
+            var basis = new HighlightItem("Basis", new PointD(0.0, 0.0), 2.0, this.mandelbrotImage, this.scale, this.centerX, this.centerY);
             var infiniteZoom = new HighlightItem("Infinite Zoom", new PointD(-1.4845903478, 0.0), 1.0, this.mandelbrotImage, this.scale, this.centerX, this.centerY);
             var star = new HighlightItem("Star", new PointD(-0.6702091879, -0.4580609753), 0.07, this.mandelbrotImage, this.scale, this.centerX, this.centerY);
+            var explosion = new HighlightItem("Explosion", new PointD(-0.7084314944, -0.2573555293), 0.00273082440794726, this.mandelbrotImage, this.scale, this.centerX, this.centerY);
 
             highlights.Items.AddRange(new ComboBoxItem[]{
+                basis,
                 infiniteZoom,
                 star,
+                explosion,
             });
+            highlights.SelectedItem = basis;
 
             this.Controls.AddRange(new Control[]{
                 centerXLabel,
@@ -177,6 +182,9 @@ namespace Mandelbrot {
     }
 }
 
+/// <summary>
+/// Represent an item for <see cref="ComboBox.Items"/> with a specific test and <see cref="OnClick"/> event
+/// </summary>
 public class ComboBoxItem {
     public string Text { get; set; } = "No Text Specified";
     public event EventHandler OnClick;
@@ -196,10 +204,12 @@ public class HighlightItem : ComboBoxItem {
         this.Text = text;
 
         this.OnClick += (sender, e) => {
+            ///change selector values
             scaleSelecter.Value = (decimal)scale;
             xSelector.Value = (decimal)newCenter.X;
             ySelector.Value = (decimal)newCenter.Y;
 
+            ///change <see cref="MandelbrotImage"/> values
             target.ZoomScale = scale;
             target.Center = newCenter;
 
