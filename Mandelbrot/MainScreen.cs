@@ -7,11 +7,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Mandelbrot;
 
 namespace Mandelbrot {
     public partial class MainScreen : Form {
         const int MANDELBROT_OFFSET_Y = 90;
-
+        /// <summary>
+        /// lalal
+        /// </summary>
         public MainScreen() {
             InitializeComponent();
 
@@ -52,6 +55,21 @@ namespace Mandelbrot {
             SetRectangle(this.threadCount, new Point(5, 0));
             SetRectangle(threadCountLabel, new Point(4, 0));
 
+            ComboBox highlights = new ComboBox();
+            SetRectangle(highlights, new Point(5, 1));
+
+            highlights.SelectedValueChanged += (sender, e) => {
+                ((ComboBoxItem)highlights.SelectedItem).Click();
+            };
+
+            var infiniteZoom = new HighlightItem("Infinite Zoom", new PointD(-1.4845903478, 0.0), 1.0, this.mandelbrotImage, this.scale, this.centerX, this.centerY);
+            var star = new HighlightItem("Star", new PointD(-0.6702091879, -0.4580609753), 0.07, this.mandelbrotImage, this.scale, this.centerX, this.centerY);
+
+            highlights.Items.AddRange(new ComboBoxItem[]{
+                infiniteZoom,
+                star,
+            });
+
             this.Controls.AddRange(new Control[]{
                 centerXLabel,
                 centerYLabel,
@@ -59,6 +77,7 @@ namespace Mandelbrot {
                 scaleLabel,
                 threadCountLabel,
                 okButton,
+                highlights,
                 this.centerX,
                 this.centerY,
                 this.scale,
@@ -83,6 +102,7 @@ namespace Mandelbrot {
         private void OnMandelbrotClick(object sender, MouseEventArgs e) {
             this.centerX.Value = (decimal)this.mandelbrotImage.Center.X;
             this.centerY.Value = (decimal)this.mandelbrotImage.Center.Y;
+            this.scale.Value = (decimal)this.mandelbrotImage.ZoomScale;
         }
 
         /// <summary>
@@ -139,7 +159,7 @@ namespace Mandelbrot {
         }
 
         //initialize controls
-        private MandelbrotImage mandelbrotImage = new MandelbrotImage() {
+        public MandelbrotImage mandelbrotImage { get; private set; } = new MandelbrotImage() {
             Location = new Point(0, MANDELBROT_OFFSET_Y),
         };
 
@@ -154,5 +174,36 @@ namespace Mandelbrot {
             scale = new NumericUpDown() { Value = 2, DecimalPlaces = 20},
             maxIterCount = new NumericUpDown() { Minimum = 0, Maximum = 20000, Value = 600 },
             threadCount = new NumericUpDown() { Minimum = 1, Maximum = 100, Value = 8 };
+    }
+}
+
+public class ComboBoxItem {
+    public string Text { get; set; } = "No Text Specified";
+    public event EventHandler OnClick;
+
+    public void Click() {
+        OnClick?.Invoke(this, new EventArgs());
+    }
+
+    public override string ToString() {
+        return this.Text;
+    }
+}
+
+public class HighlightItem : ComboBoxItem {
+    public HighlightItem(string text, PointD newCenter, double scale, MandelbrotImage target,
+        NumericUpDown scaleSelecter, NumericUpDown xSelector, NumericUpDown ySelector) {
+        this.Text = text;
+
+        this.OnClick += (sender, e) => {
+            scaleSelecter.Value = (decimal)scale;
+            xSelector.Value = (decimal)newCenter.X;
+            ySelector.Value = (decimal)newCenter.Y;
+
+            target.ZoomScale = scale;
+            target.Center = newCenter;
+
+            target.Invalidate();
+        };
     }
 }

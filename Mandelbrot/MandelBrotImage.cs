@@ -28,6 +28,7 @@ namespace Mandelbrot {
         private void OnMandelMouseClick(object sender, MouseEventArgs e) {
             var newCenter = DefaultPixelToMandelCoordsMapper(this.Center, this.ClientSize, this.ZoomScale)(e.Location);
             this.Center = new PointD(newCenter.X, -newCenter.Y);
+            this.ZoomScale *= .5;
             this.Invalidate();
         }
 
